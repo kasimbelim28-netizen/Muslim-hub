@@ -5,36 +5,78 @@
 <title>Dashboard</title>
 </head>
 
-<body style="background:#020617;color:white;text-align:center;font-family:sans-serif">
+<body style="background:#020617;color:white;text-align:center;font-family:sans-serif;padding-top:60px">
 
-<h1>Loading your account...</h1>
+<h2 id="status">Logging you in...</h2>
 
 <script>
 
-// check token in URL hash
-const hash = window.location.hash;
+// STEP 1 — Get token from URL after Discord login
+if(window.location.hash.includes("access_token")){
 
-if(hash.includes("access_token")){
-    
-    const token = new URLSearchParams(hash.substring(1)).get("access_token");
+  const params = new URLSearchParams(window.location.hash.substring(1));
+  const token = params.get("access_token");
 
-    // save token
+  if(token){
     localStorage.setItem("discord_token", token);
 
-    // clean URL
-    window.location.hash="";
+    // remove token from URL
+    window.location.href="dashboard.html";
+  }
 
 }
 
-// check saved token
-const saved = localStorage.getItem("discord_token");
+// STEP 2 — Load saved token
+const token = localStorage.getItem("discord_token");
 
-if(!saved){
-    document.body.innerHTML="<h1>Please login first</h1>";
+if(!token){
+  document.getElementById("status").innerText="Please login first.";
 }else{
 
-// fetch user info from Discord
+// STEP 3 — Fetch Discord user
 fetch("https://discord.com/api/users/@me",{
-headers:{Authorization:"Bearer "+saved}
+  headers:{ Authorization:"Bearer "+token }
 })
-.then(res=>res.json
+.then(res=>{
+
+  if(!res.ok){
+    throw new Error("Token invalid");
+  }
+
+  return res.json();
+})
+.then(user=>{
+
+document.body.innerHTML=`
+<h1>Welcome ${user.username}</h1>
+
+<img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png"
+width="120"
+style="border-radius:50%;margin-top:15px">
+
+<p>User ID: ${user.id}</p>
+
+<br><br>
+<button onclick="logout()" style="
+padding:10px 18px;
+border:none;
+border-radius:8px;
+background:#ef4444;
+color:white;
+cursor:pointer">Logout</button>
+`;
+
+})
+.catch(()=>{
+
+localStorage.removeItem("discord_token");
+
+document.getElementById("status").innerText=
+"Login expired. Please go back and login again.";
+
+});
+
+}
+
+function logout(){
+localStorage.removeItem("discord
