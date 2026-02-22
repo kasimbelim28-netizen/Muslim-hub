@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body style="background:#020617;color:white;text-align:center;font-family:sans-serif">
+
+<h1>Admin Panel</h1>
+
+<script>
+const OWNER_ID="1473632317112189062";
+const user=JSON.parse(localStorage.getItem("discordUser")||"{}");
+
+if(user.id!==OWNER_ID){
+document.body.innerHTML="<h2>Access Denied</h2>";
+}
+</script>
+
+</body>
+</html>
