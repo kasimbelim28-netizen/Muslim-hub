@@ -50,9 +50,13 @@ background:#4752C4;
 </button>
 
 <script src="auth.js"></script>
+<body>
 
-</body>
-  <script>
+<script>
+if(localStorage.getItem("siteLocked")==="true"){
+document.body.innerHTML="<h1>Website Under Maintenance</h1>";
+}
+</script>
 const user = JSON.parse(localStorage.getItem("discordUser") || "null");
 
 if (user) {
