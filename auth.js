@@ -1,5 +1,5 @@
 function loginWithDiscord() {
-  const CLIENT_ID = "1474836154225524787";
+  const CLIENT_ID = "1474836154225524787";   // your real ID
   const REDIRECT_URI = "https://muslim-hub-cyan.vercel.app/dashboard.html";
 
   const url =
