@@ -171,6 +171,10 @@ Ultra Dashboard • Made by Gojo imam
 
 </body>
   <script>
+if(localStorage.getItem("siteLocked")==="true"){
+document.body.innerHTML="<h1>Website Under Maintenance</h1>";
+}
+  </script>
 const user = JSON.parse(localStorage.getItem("discordUser") || "null");
 
 if (!user) {
