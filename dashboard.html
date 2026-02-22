@@ -170,4 +170,11 @@ Ultra Dashboard • Made for Kasim
 </div>
 
 </body>
+  <script>
+const user = JSON.parse(localStorage.getItem("discordUser") || "null");
+
+if (!user) {
+  window.location.href = "index.html";
+}
+</script>
   </html>
