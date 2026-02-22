@@ -169,7 +169,38 @@ Join Discord
 Ultra Dashboard • Made by Gojo imam
 </div>
 
-</body>
+</body><div id="supportBox" style="
+display:none;
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:#020617;
+padding:20px;
+border-radius:12px;
+box-shadow:0 0 20px #3b82f6;
+text-align:center;
+color:white;
+width:90%;
+max-width:320px;
+">
+
+<h3>Support • Gojo Imam</h3>
+
+<p>Discord: <b>kasim.visual</b></p>
+
+<textarea id="supportText"
+placeholder="Write your bug or support request..."
+style="width:100%;height:80px;margin-top:10px;"></textarea>
+
+<br><br>
+
+<button onclick="generateSupport()">Create Message</button>
+<button onclick="closeSupport()">Close</button>
+
+<p id="supportOutput" style="margin-top:10px;color:#60a5fa"></p>
+
+</div>
   <script>
 if(localStorage.getItem("siteLocked")==="true"){
 document.body.innerHTML="<h1>Website Under Maintenance</h1>";
