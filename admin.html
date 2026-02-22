@@ -4,15 +4,27 @@
 
 <h1>Admin Panel</h1>
 
+<input id="cmdBox" placeholder="Type command here"
+style="padding:10px;width:260px;border-radius:8px;border:none">
+
+<br><br>
+
+<button onclick="runCmd()" 
+style="padding:10px 20px;border:none;border-radius:10px;background:#3b82f6;color:white">
+Run Command
+</button>
+
+<div id="output" style="margin-top:20px"></div>
+
 <script>
+
 const OWNER_ID="1473632317112189062";
 const user=JSON.parse(localStorage.getItem("discordUser")||"{}");
 
 if(user.id!==OWNER_ID){
 document.body.innerHTML="<h2>Access Denied</h2>";
 }
-<script>
- async function runCommand(){
+
 function runCmd(){
 
 let cmd=document.getElementById("cmdBox").value.trim();
@@ -29,17 +41,22 @@ alert("Website unlocked");
 
 else if(cmd.startsWith("?playsong")){
 let song=cmd.split(" ")[1];
+
 if(song){
-localStorage.setItem("song",song);
-alert("Song saved: "+song);
-}else{
+document.getElementById("output").innerHTML =
+`<iframe width="300" height="170"
+src="https://www.youtube.com/embed/${song}"
+allowfullscreen></iframe>`;
+}
+else{
 alert("Write: ?playsong SONG_ID");
 }
 }
 
 else if(cmd==="?checkallusersaccount"){
 let users=JSON.parse(localStorage.getItem("users")||"[]");
-document.getElementById("output").innerHTML=
+
+document.getElementById("output").innerHTML =
 "<pre>"+JSON.stringify(users,null,2)+"</pre>";
 }
 
@@ -47,65 +64,9 @@ else{
 alert("Unknown command");
 }
 
- }
-let cmd = prompt("Enter command:");
-
-if(!cmd) return;
-
-cmd = cmd.trim();
-
-
-// LOCK WEB
-if(cmd === "?lockweb"){
-await supabaseClient
-.from("site_settings")
-.update({locked:true})
-.eq("id",1);
-
-alert("Website locked");
 }
 
-
-// UNLOCK WEB
-else if(cmd === "?unlockweb"){
-await supabaseClient
-.from("site_settings")
-.update({locked:false})
-.eq("id",1);
-
-alert("Website unlocked");
-}
-
-
-// PLAY SONG
-else if(cmd.startsWith("?playsong")){
-
-let id = cmd.split(" ")[1];
-
-document.getElementById("output").innerHTML =
-`<iframe width="300" height="170"
-src="https://www.youtube.com/embed/${id}"
-allowfullscreen></iframe>`;
-}
-
-
-// CHECK ALL USERS
-else if(cmd === "?checkallusersaccount"){
-
-let {data,error} = await supabaseClient
-.from("users")
-.select("*");
-
-document.getElementById("output").innerHTML =
-"<pre>"+JSON.stringify(data,null,2)+"</pre>";
-
-}
-
-else{
-alert("Unknown command");
-}
-
-  }
+</script>
 
 </body>
 </html>
