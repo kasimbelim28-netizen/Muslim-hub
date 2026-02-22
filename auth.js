@@ -3,7 +3,7 @@ const REDIRECT=window.location.origin;
 
 function login(){
 window.location=
-`https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT)}&scope=identify`;
+`https://discord.com/oauth2/authorize?client_id=${1474836154225524787}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT)}&scope=identify`;
 }
 
 if(window.location.hash){
