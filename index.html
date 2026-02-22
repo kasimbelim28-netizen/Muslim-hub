@@ -52,4 +52,12 @@ background:#4752C4;
 <script src="auth.js"></script>
 
 </body>
+  <script>
+const user = JSON.parse(localStorage.getItem("discordUser") || "null");
+
+if (user) {
+  window.location.href = "dashboard.html";
+}
+</script>
   </html>
+
