@@ -1,1 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body style="background:#020617;color:white;text-align:center;font-family:sans-serif">
 
+<h1>Partnership Request</h1>
+
+<form onsubmit="send();return false;">
+<input id="name" placeholder="Server name"><br><br>
+<button>Send</button>
+</form>
+
+<script>
+function send(){
+let data=JSON.parse(localStorage.getItem("partners")||"[]");
+data.push(document.getElementById("name").value);
+localStorage.setItem("partners",JSON.stringify(data));
+alert("Sent");
+}
+</script>
+
+</body>
+</html>
