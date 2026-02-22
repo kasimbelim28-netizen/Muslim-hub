@@ -3,14 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <title>Muslim Hub</title>
+
+<style>
+body{
+background:#020617;
+color:white;
+text-align:center;
+font-family:sans-serif;
+padding-top:80px;
+}
+
+.discord-btn{
+width:90px;
+height:90px;
+border-radius:50%;
+border:none;
+background:#5865F2;
+display:flex;
+align-items:center;
+justify-content:center;
+margin:auto;
+box-shadow:0 8px 25px rgba(0,0,0,0.35);
+cursor:pointer;
+transition:0.25s;
+}
+
+.discord-btn img{
+width:45px;
+filter:invert(1);
+}
+
+.discord-btn:hover{
+transform:scale(1.08);
+background:#4752C4;
+}
+</style>
+
 </head>
-<body style="background:#020617;color:white;text-align:center;font-family:sans-serif">
+
+<body>
 
 <h1>Muslim Hub</h1>
 
-<button onclick="login()">Login with Discord</button>
+<button class="discord-btn" onclick="loginWithDiscord()">
+<img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg">
+</button>
 
 <script src="auth.js"></script>
 
 </body>
-</html>
+  </html>
