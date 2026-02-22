@@ -1,38 +1,40 @@
 <!DOCTYPE html>
 <html>
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+</head>
+
 <body style="background:#020617;color:white;text-align:center;font-family:sans-serif">
 
-<h1>Dashboard</h1>
-
-<div id="user"></div>
-
-<br>
-
-<a href="partnership.html">Partnership</a><br><br>
-<a href="admin.html">Admin Panel</a>
-
-<script src="supabase.js"></script>
+<h1>Loading your account...</h1>
 
 <script>
-const user = JSON.parse(localStorage.getItem("discordUser") || "null");
 
-if(!user){
-location="index.html";
+// check token in URL hash
+const hash = window.location.hash;
+
+if(hash.includes("access_token")){
+    
+    const token = new URLSearchParams(hash.substring(1)).get("access_token");
+
+    // save token
+    localStorage.setItem("discord_token", token);
+
+    // clean URL
+    window.location.hash="";
+
 }
 
-document.getElementById("user").innerHTML =
-`Logged in as ${user.username}`;
+// check saved token
+const saved = localStorage.getItem("discord_token");
 
-async function saveUser(user){
-await supabase.from("users").insert([{
-discord_id:user.id,
-username:user.username,
-avatar:user.avatar
-}]);
-}
+if(!saved){
+    document.body.innerHTML="<h1>Please login first</h1>";
+}else{
 
-saveUser(user);
-</script>
-
-</body>
-</html>
+// fetch user info from Discord
+fetch("https://discord.com/api/users/@me",{
+headers:{Authorization:"Bearer "+saved}
+})
+.then(res=>res.json
