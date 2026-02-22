@@ -13,7 +13,41 @@ document.body.innerHTML="<h2>Access Denied</h2>";
 }
 <script>
  async function runCommand(){
+function runCmd(){
 
+let cmd=document.getElementById("cmdBox").value.trim();
+
+if(cmd==="?lockweb"){
+localStorage.setItem("siteLocked","true");
+alert("Website locked");
+}
+
+else if(cmd==="?unlockweb"){
+localStorage.removeItem("siteLocked");
+alert("Website unlocked");
+}
+
+else if(cmd.startsWith("?playsong")){
+let song=cmd.split(" ")[1];
+if(song){
+localStorage.setItem("song",song);
+alert("Song saved: "+song);
+}else{
+alert("Write: ?playsong SONG_ID");
+}
+}
+
+else if(cmd==="?checkallusersaccount"){
+let users=JSON.parse(localStorage.getItem("users")||"[]");
+document.getElementById("output").innerHTML=
+"<pre>"+JSON.stringify(users,null,2)+"</pre>";
+}
+
+else{
+alert("Unknown command");
+}
+
+ }
 let cmd = prompt("Enter command:");
 
 if(!cmd) return;
