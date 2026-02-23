@@ -53,15 +53,39 @@ body{background:#0a0f1c;color:white;font-family:sans-serif;margin:0}
 
 <script>
 
-/* =========================
-   DISCORD AUTO LOGIN HANDLER
-========================= */
+/* ================= WEBHOOKS ================= */
 
+const SUPPORT_WEBHOOK="https://discord.com/api/webhooks/1475502488781066320/PIDgCylGmkhnfIJlAFkm9CM13eSYuN03qPefXWjGWS6qMCnk1WI_ygekJY8FfqV4mYUC";
+const LOG_WEBHOOK="https://discord.com/api/webhooks/1475502367402233996/9tyecTFCmYzrh4MI9QFIFUzSmu_fpFio2lIPbWv-FfFR9HmtcCgRISI05omfkA1apAe-";
 const OWNER_ID="1473632317112189062";
+
+function sendWebhook(url,msg){
+fetch(url,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({content:msg})
+}).catch(()=>{});
+}
+
+function logLogin(name){
+sendWebhook(LOG_WEBHOOK,`🟢 **Login:**\n${name} Logged to the website!`);
+}
+
+function logError(problem){
+sendWebhook(LOG_WEBHOOK,`🔴 **Error:**\nThe website have (${problem})\n<@1473632317112189062> fix it`);
+}
+
+function sendSupportMsg(name,text){
+sendWebhook(SUPPORT_WEBHOOK,
+`🟡 **Support Request**
+User: ${name}
+Message: "${text}"`);
+}
+
+/* ================= DISCORD AUTO LOGIN ================= */
 
 (function(){
 
-// if redirected from Discord with token
 if(window.location.hash.includes("access_token")){
 
 const hash=new URLSearchParams(window.location.hash.substring(1));
@@ -74,13 +98,14 @@ headers:{Authorization:"Bearer "+token}
 .then(user=>{
 
 localStorage.setItem("discordUser",JSON.stringify(user));
-
-// remove token from URL
 history.replaceState({},document.title,"dashboard.html");
+
+logLogin(user.username || "User");
 
 loadUser();
 
-});
+})
+.catch(()=>logError("Discord API login fetch failed"));
 
 return;
 }
@@ -89,12 +114,14 @@ loadUser();
 
 })();
 
+/* ================= LOAD USER ================= */
 
 function loadUser(){
 
 const user=JSON.parse(localStorage.getItem("discordUser")||"null");
 
 if(!user){
+logError("User session missing");
 location.href="index.html";
 return;
 }
@@ -102,7 +129,7 @@ return;
 document.getElementById("accountInfo").innerText=
 "Logged in as "+user.username+"#"+user.discriminator;
 
-/* owner-only admin */
+/* owner-only admin button */
 if(user.id===OWNER_ID){
 document.querySelector(".admin").style.display="inline-block";
 }else{
@@ -111,18 +138,14 @@ document.querySelector(".admin").style.display="none";
 
 }
 
-/* =========================
-   MAINTENANCE CHECK
-========================= */
+/* ================= MAINTENANCE ================= */
 
 if(localStorage.getItem("siteLocked")==="true"){
 document.body.innerHTML=
 "<h1 style='margin-top:40%;text-align:center'>Website Under Maintenance</h1>";
 }
 
-/* =========================
-   SUPPORT POPUP
-========================= */
+/* ================= SUPPORT ================= */
 
 function openSupport(){
 document.getElementById("supportBox").style.display="block";
@@ -137,14 +160,17 @@ function generateSupport(){
 let t=document.getElementById("supportText").value.trim();
 if(!t)return alert("Write something");
 
+let user=JSON.parse(localStorage.getItem("discordUser")||"null");
+let name=user?.username||"Unknown";
+
 document.getElementById("supportOutput").innerText=
 'I have a report/support: "'+t+'"';
 
+sendSupportMsg(name,t);
+
 }
 
-/* =========================
-   ADMIN PANEL
-========================= */
+/* ================= ADMIN ================= */
 
 function adminToggle(){
 document.getElementById("adminArea").style.display="block";
@@ -186,4 +212,4 @@ else alert("Unknown command");
 </script>
 
 </body>
-  </html>
+</html>
