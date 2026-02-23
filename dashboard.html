@@ -3,15 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultra Dashboard</title>
+<title>Dashboard</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Segoe UI, sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif;}
 
 body{
 background:#0a0f1c;
@@ -22,7 +17,6 @@ flex-direction:column;
 }
 
 /* TOP BAR */
-
 .topbar{
 display:flex;
 justify-content:space-between;
@@ -42,7 +36,6 @@ text-shadow:0 0 12px #3b82f6;
 }
 
 /* BUTTONS */
-
 .btn{
 padding:10px 18px;
 border-radius:10px;
@@ -52,47 +45,37 @@ font-weight:600;
 transition:0.25s;
 }
 
-/* SUPPORT BUTTON (BLUE GLOW) */
-
+/* SUPPORT */
 .support{
 background:#1d4ed8;
 color:white;
-box-shadow:0 0 15px #2563eb, 0 0 35px #1d4ed8;
+box-shadow:0 0 15px #2563eb,0 0 35px #1d4ed8;
 }
-
 .support:hover{
 transform:translateY(-2px) scale(1.05);
 box-shadow:0 0 25px #3b82f6,0 0 60px #2563eb;
 }
 
-/* ADMIN BUTTON */
-
+/* ADMIN */
 .admin{
 background:#111827;
 color:#9ca3af;
 border:1px solid #374151;
 }
+.admin:hover{background:#1f2937;color:white;}
 
-.admin:hover{
-background:#1f2937;
-color:white;
-}
-
-/* DISCORD BUTTON */
-
+/* DISCORD */
 .discord{
 background:#5865F2;
 color:white;
 box-shadow:0 0 15px #5865F2;
 }
-
 .discord:hover{
 transform:scale(1.05);
 box-shadow:0 0 30px #5865F2;
 }
 
-/* MAIN CONTENT */
-
+/* MAIN */
 .main{
 flex:1;
 padding:40px;
@@ -102,7 +85,6 @@ gap:25px;
 }
 
 /* CARD */
-
 .card{
 background:rgba(17,24,39,0.9);
 padding:28px;
@@ -111,16 +93,11 @@ box-shadow:0 0 20px rgba(0,0,0,0.5);
 border:1px solid rgba(255,255,255,0.05);
 transition:0.3s;
 }
-
 .card:hover{
 transform:translateY(-6px);
 box-shadow:0 0 30px rgba(59,130,246,0.35);
 }
-
-.card h3{
-margin-bottom:10px;
-color:#93c5fd;
-}
+.card h3{margin-bottom:10px;color:#93c5fd;}
 
 .footer{
 text-align:center;
@@ -128,65 +105,9 @@ padding:18px;
 opacity:0.6;
 font-size:14px;
 }
-</style>
-</head>
 
-
-</body>
-  <script>
-
-// maintenance lock
-if(localStorage.getItem("siteLocked")==="true"){
-document.body.innerHTML="<h1 style='color:white;text-align:center;margin-top:40%'>Website Under Maintenance</h1>";
-}
-
-// check login
-const user = JSON.parse(localStorage.getItem("discordUser") || "null");
-if(!user){
-window.location.href="index.html";
-}
-
-</script>
-  
-
-<div class="topbar">
-<div class="logo">ULTRA DASHBOARD</div>
-
-<div style="display:flex; gap:12px;">
-<button class="btn support">Support</button>
-<button class="btn admin">Admin Panel</button>
-<button class="btn discord"
-onclick="window.open('https://discord.gg/ATzJaBh3xk','_blank')">
-Join Discord
-</button>
-</div>
-</div>
-
-<div class="main">
-
-<div class="card">
-<h3>Welcome</h3>
-<p>Your dashboard is ready. Manage settings and monitor your system.</p>
-</div>
-
-<div class="card">
-<h3>Account</h3>
-<p>View profile, login info, and linked Discord account.</p>
-</div>
-
-<div class="card">
-<h3>Server Status</h3>
-<p>All services running smoothly.</p>
-</div>
-
-</div>
-
-<div class="footer">
-Ultra Dashboard • Made by Gojo imam
-</div>
-
-</body>
-<div id="supportBox" style="
+/* SUPPORT POPUP */
+#supportBox{
 display:none;
 position:fixed;
 top:50%;
@@ -200,10 +121,70 @@ text-align:center;
 color:white;
 width:90%;
 max-width:320px;
-">
+}
 
+/* ADMIN PANEL */
+#adminArea{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#020617;
+padding:15px;
+border-radius:12px;
+box-shadow:0 0 20px #3b82f6;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+<div class="logo">ULTRA DASHBOARD</div>
+
+<div style="display:flex; gap:12px;">
+<button class="btn support" onclick="openSupport()">Support</button>
+
+<button class="btn admin"
+onclick="document.getElementById('adminArea').style.display='block'">
+Admin Panel
+</button>
+
+<button class="btn discord"
+onclick="window.open('https://discord.gg/ATzJaBh3xk','_blank')">
+Join Discord
+</button>
+</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="card">
+<h3>Welcome</h3>
+<p>Your dashboard is ready. Manage settings and monitor your system.</p>
+</div>
+
+<div class="card">
+<h3>Account</h3>
+<p id="accountInfo">Loading account...</p>
+</div>
+
+<div class="card">
+<h3>Server Status</h3>
+<p>All services running smoothly.</p>
+</div>
+
+</div>
+
+<div class="footer">
+Ultra Dashboard • Made by Gojo imam
+</div>
+
+<!-- SUPPORT BOX -->
+<div id="supportBox">
 <h3>Support • Gojo Imam</h3>
-
 <p>Discord: <b>kasim.visual</b></p>
 
 <textarea id="supportText"
@@ -216,42 +197,83 @@ style="width:100%;height:80px;margin-top:10px;"></textarea>
 <button onclick="closeSupport()">Close</button>
 
 <p id="supportOutput" style="margin-top:10px;color:#60a5fa"></p>
-
 </div>
-  <script>
-function openSupport(){
- document.getElementById("supportBox").style.display="block";
-}
 
-function closeSupport(){
- document.getElementById("supportBox").style.display="none";
-}
+<!-- ADMIN PANEL -->
+<div id="adminArea" style="display:none;">
+<input id="cmdBox" placeholder="?lockweb"
+style="padding:10px;border-radius:8px;border:none;width:200px">
 
-function generateSupport(){
- let text=document.getElementById("supportText").value.trim();
+<button onclick="runCmd()">Run</button>
 
- if(!text){
-   alert("Write something first");
-   return;
- }
+<div id="output" style="margin-top:10px;font-size:13px;"></div>
+</div>
 
- document.getElementById("supportOutput").innerText =
- "I have a report/support: \""+text+"\"";
-}
-  </script>
-if(localStorage.getItem("siteLocked")==="true"){
-document.body.innerHTML="<h1>Website Under Maintenance</h1>";
-}
-  </script>
+<!-- SCRIPT (ONLY ONE SCRIPT IN WHOLE PAGE) -->
+<script>
+
+// LOGIN CHECK
 const user = JSON.parse(localStorage.getItem("discordUser") || "null");
-
-if (!user) {
-  window.location.href = "index.html";
+if(!user){
+window.location.href="index.html";
+}else{
+document.getElementById("accountInfo").innerText =
+"Logged in as: "+(user.username || user.global_name || "Discord User");
 }
-  <button onclick="runCommand()">Run Command</button>
-<div id="adminArea"><input id="cmdBox" placeholder="Type command like ?lockweb"
-style="padding:10px;border-radius:8px;border:none;width:220px">
 
-<button onclick="runCmd()">Run</button></div>
+// MAINTENANCE LOCK
+if(localStorage.getItem("siteLocked")==="true"){
+document.body.innerHTML="<h1 style='color:white;text-align:center;margin-top:40%'>Website Under Maintenance</h1>";
+}
+
+// SUPPORT FUNCTIONS
+function openSupport(){
+document.getElementById("supportBox").style.display="block";
+}
+function closeSupport(){
+document.getElementById("supportBox").style.display="none";
+}
+function generateSupport(){
+let text=document.getElementById("supportText").value.trim();
+if(!text){alert("Write something first");return;}
+document.getElementById("supportOutput").innerText=
+'I have a report/support: "'+text+'"';
+}
+
+// ADMIN COMMANDS
+function runCmd(){
+let cmd=document.getElementById("cmdBox").value.trim();
+
+if(cmd==="?lockweb"){
+localStorage.setItem("siteLocked","true");
+location.reload();
+}
+
+else if(cmd==="?unlockweb"){
+localStorage.removeItem("siteLocked");
+location.reload();
+}
+
+else if(cmd.startsWith("?playsong")){
+let id=cmd.split(" ")[1];
+document.getElementById("output").innerHTML=
+`<iframe width="250" height="140"
+src="https://www.youtube.com/embed/${id}"
+allowfullscreen></iframe>`;
+}
+
+else if(cmd==="?checkallusersaccount"){
+document.getElementById("output").innerText=
+localStorage.getItem("discordUser") || "No users saved";
+}
+
+else{
+alert("Unknown command");
+}
+
+}
+
 </script>
+
+</body>
   </html>
