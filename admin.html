@@ -19,60 +19,39 @@ Run Command
 <script>
 
 const OWNER_ID="1473632317112189062";
+const user=JSON.parse(localStorage.getItem("discordUser")||"null");
 
-/* GET USER FROM LOGIN */
-const user = JSON.parse(localStorage.getItem("discordUser") || "null");
-
-/* NOT LOGGED IN */
 if(!user){
 document.body.innerHTML="<h2>You are not logged in</h2>";
 }
-
-/* NOT OWNER */
-else if(user.id !== OWNER_ID){
+else if(user.id!==OWNER_ID){
 document.body.innerHTML="<h2>Access Denied (Owner Only)</h2>";
 }
 
-/* COMMAND SYSTEM */
 function runCmd(){
 
-let cmd=document.getElementById("cmdBox").value.trim();
+let cmd=cmdBox.value.trim();
 
-if(cmd === "?lockweb"){
+if(cmd==="?lockweb"){
 localStorage.setItem("siteLocked","true");
 alert("Website locked");
 }
 
-else if(cmd === "?unlockweb"){
+else if(cmd==="?unlockweb"){
 localStorage.removeItem("siteLocked");
-alert("Website unlocked");
+alert("Unlocked");
 }
 
 else if(cmd.startsWith("?playsong")){
-let parts = cmd.split(" ");
-let song = parts[1];
-
-if(song){
-document.getElementById("output").innerHTML =
-`<iframe width="300" height="170"
-src="https://www.youtube.com/embed/${song}"
-allowfullscreen></iframe>`;
-}else{
-alert("Write: ?playsong VIDEO_ID");
-}
+let id=cmd.split(" ")[1];
+output.innerHTML=`<iframe width="300" height="170" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
 }
 
-else if(cmd === "?checkallusersaccount"){
-let users = JSON.parse(localStorage.getItem("users") || "[]");
-
-document.getElementById("output").innerHTML =
-"<pre>"+JSON.stringify(users,null,2)+"</pre>";
+else if(cmd==="?checkallusersaccount"){
+output.innerText=localStorage.getItem("discordUser")||"none";
 }
 
-else{
-alert("Unknown command");
-}
-
+else alert("Unknown command");
 }
 
 </script>
