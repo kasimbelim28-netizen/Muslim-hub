@@ -68,11 +68,13 @@ body:JSON.stringify({content:msg})
 }
 
 function logLogin(name){
+if(sessionStorage.getItem("loginLogged")) return;
+sessionStorage.setItem("loginLogged","1");
 sendWebhook(LOG_WEBHOOK,`🟢 **Login:**\n${name} Logged to the website!`);
 }
 
 function logError(problem){
-sendWebhook(LOG_WEBHOOK,`🔴 **Error:**\nThe website have (${problem})\n<@${OWNER_ID}> fix it`);
+sendWebhook(LOG_WEBHOOK,`🔴 **Error:**\n${problem}\n<@${OWNER_ID}>`);
 }
 
 function sendSupportMsg(name,text){
@@ -81,6 +83,12 @@ sendWebhook(SUPPORT_WEBHOOK,
 User: ${name}
 Message: "${text}"`);
 }
+
+/* ========= GLOBAL ERROR LOGGER ========= */
+
+window.onerror=function(msg,src,line,col,error){
+logError(msg+" at line "+line);
+};
 
 /* ========= DISCORD LOGIN ========= */
 
@@ -100,12 +108,12 @@ headers:{Authorization:"Bearer "+token}
 localStorage.setItem("discordUser",JSON.stringify(user));
 history.replaceState({},document.title,"dashboard.html");
 
-logLogin(user.username || "User");
+logLogin(user.username||"User");
 
 loadUser();
 
 })
-.catch(()=>logError("Discord API login fetch failed"));
+.catch(()=>logError("Discord login fetch failed"));
 
 return;
 }
@@ -210,4 +218,4 @@ else alert("Unknown command");
 </script>
 
 </body>
-  </html>
+</html>
