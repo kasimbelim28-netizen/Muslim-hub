@@ -56,11 +56,10 @@ background:#4752C4;
 if(localStorage.getItem("siteLocked")==="true"){
 document.body.innerHTML="<h1>Website Under Maintenance</h1>";
 }
-</script>
+<script>
 const user = JSON.parse(localStorage.getItem("discordUser") || "null");
-
-if (user) {
-  window.location.href = "dashboard.html";
+if(user){
+  window.location.href="dashboard.html";
 }
 </script>
   </html>
