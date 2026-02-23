@@ -5,17 +5,23 @@
 <h2>Logging you in...</h2>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const code = params.get("code");
+const params=new URLSearchParams(location.search);
+const code=params.get("code");
 
 if(!code){
-  document.body.innerHTML="Login failed";
+document.body.innerHTML="Login failed (no code)";
 }else{
-  // save login
-  localStorage.setItem("discord_logged","true");
 
-  // redirect to dashboard
-  window.location.href="dashboard.html";
+/* FAKE USER FOR NOW (replace later with real Discord API) */
+
+const fakeUser={
+id:"1473632317112189062",
+username:"kasim.visual"
+};
+
+localStorage.setItem("discordUser",JSON.stringify(fakeUser));
+
+window.location.href="dashboard.html";
 }
 </script>
 
