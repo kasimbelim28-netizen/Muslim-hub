@@ -132,6 +132,25 @@ font-size:14px;
 </head>
 
 <body>
+  <!-- YOUR PAGE CONTENT ABOVE -->
+
+<script>
+
+// maintenance lock
+if(localStorage.getItem("siteLocked")==="true"){
+document.body.innerHTML="<h1 style='color:white;text-align:center;margin-top:40%'>Website Under Maintenance</h1>";
+}
+
+// check login
+const user = JSON.parse(localStorage.getItem("discordUser") || "null");
+if(!user){
+window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>
 
 <div class="topbar">
 <div class="logo">ULTRA DASHBOARD</div>
