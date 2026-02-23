@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Dashboard</title>
+
 <style>
 body{background:#0a0f1c;color:white;font-family:sans-serif;margin:0}
 .topbar{display:flex;justify-content:space-between;padding:18px;background:#0f1428}
@@ -13,6 +14,7 @@ body{background:#0a0f1c;color:white;font-family:sans-serif;margin:0}
 .main{padding:30px}
 .card{background:#111827;padding:20px;border-radius:12px;margin-bottom:20px}
 #adminArea{position:fixed;bottom:20px;right:20px;background:#020617;padding:15px;border-radius:10px;display:none}
+#supportBox textarea{width:260px;height:90px;border-radius:8px;border:none;padding:8px}
 </style>
 </head>
 
@@ -29,60 +31,129 @@ body{background:#0a0f1c;color:white;font-family:sans-serif;margin:0}
 </div>
 
 <div class="main">
-
 <div class="card">
 <h3>Account</h3>
-<p id="accountInfo">Loading...</p>
+<p id="accountInfo">Checking login...</p>
 </div>
-
 </div>
 
 <div id="supportBox" style="display:none;background:#020617;padding:20px;border-radius:10px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)">
 <h3>Support</h3>
-<textarea id="supportText"></textarea><br><br>
+<textarea id="supportText" placeholder="Describe your issue"></textarea><br><br>
 <button onclick="generateSupport()">Create</button>
 <button onclick="closeSupport()">Close</button>
 <p id="supportOutput"></p>
 </div>
 
 <div id="adminArea">
-<input id="cmdBox">
+<input id="cmdBox" placeholder="Type command">
 <button onclick="runCmd()">Run</button>
 <div id="output"></div>
 </div>
 
 <script>
 
-/* LOGIN CHECK */
+/* =========================
+   DISCORD AUTO LOGIN HANDLER
+========================= */
+
+const OWNER_ID="1473632317112189062";
+
+(function(){
+
+// if redirected from Discord with token
+if(window.location.hash.includes("access_token")){
+
+const hash=new URLSearchParams(window.location.hash.substring(1));
+const token=hash.get("access_token");
+
+fetch("https://discord.com/api/users/@me",{
+headers:{Authorization:"Bearer "+token}
+})
+.then(r=>r.json())
+.then(user=>{
+
+localStorage.setItem("discordUser",JSON.stringify(user));
+
+// remove token from URL
+history.replaceState({},document.title,"dashboard.html");
+
+loadUser();
+
+});
+
+return;
+}
+
+loadUser();
+
+})();
+
+
+function loadUser(){
+
 const user=JSON.parse(localStorage.getItem("discordUser")||"null");
-if(!user){location.href="index.html";}
-else{
-document.getElementById("accountInfo").innerText="Logged in as "+user.username;
+
+if(!user){
+location.href="index.html";
+return;
 }
 
-/* MAINTENANCE */
+document.getElementById("accountInfo").innerText=
+"Logged in as "+user.username+"#"+user.discriminator;
+
+/* owner-only admin */
+if(user.id===OWNER_ID){
+document.querySelector(".admin").style.display="inline-block";
+}else{
+document.querySelector(".admin").style.display="none";
+}
+
+}
+
+/* =========================
+   MAINTENANCE CHECK
+========================= */
+
 if(localStorage.getItem("siteLocked")==="true"){
-document.body.innerHTML="<h1 style='margin-top:40%;text-align:center'>Website Under Maintenance</h1>";
+document.body.innerHTML=
+"<h1 style='margin-top:40%;text-align:center'>Website Under Maintenance</h1>";
 }
 
-/* SUPPORT */
-function openSupport(){supportBox.style.display="block";}
-function closeSupport(){supportBox.style.display="none";}
+/* =========================
+   SUPPORT POPUP
+========================= */
+
+function openSupport(){
+document.getElementById("supportBox").style.display="block";
+}
+
+function closeSupport(){
+document.getElementById("supportBox").style.display="none";
+}
+
 function generateSupport(){
-let t=supportText.value.trim();
+
+let t=document.getElementById("supportText").value.trim();
 if(!t)return alert("Write something");
-supportOutput.innerText='I have a report/support: "'+t+'"';
+
+document.getElementById("supportOutput").innerText=
+'I have a report/support: "'+t+'"';
+
 }
 
-/* ADMIN TOGGLE */
+/* =========================
+   ADMIN PANEL
+========================= */
+
 function adminToggle(){
-adminArea.style.display="block";
+document.getElementById("adminArea").style.display="block";
 }
 
-/* COMMANDS */
 function runCmd(){
 
-let cmd=cmdBox.value.trim();
+let cmd=document.getElementById("cmdBox").value.trim();
+let output=document.getElementById("output");
 
 if(cmd==="?lockweb"){
 localStorage.setItem("siteLocked","true");
@@ -96,7 +167,12 @@ location.reload();
 
 else if(cmd.startsWith("?playsong")){
 let id=cmd.split(" ")[1];
-output.innerHTML=`<iframe width="250" height="140" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
+if(!id)return alert("Use ?playsong VIDEO_ID");
+
+output.innerHTML=
+`<iframe width="250" height="140"
+src="https://www.youtube.com/embed/${id}"
+allowfullscreen></iframe>`;
 }
 
 else if(cmd==="?checkallusersaccount"){
@@ -110,4 +186,4 @@ else alert("Unknown command");
 </script>
 
 </body>
-</html>
+  </html>
