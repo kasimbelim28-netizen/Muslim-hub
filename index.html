@@ -12,31 +12,14 @@ text-align:center;
 font-family:sans-serif;
 padding-top:80px;
 }
-
 .discord-btn{
-width:90px;
-height:90px;
-border-radius:50%;
-border:none;
-background:#5865F2;
-display:flex;
-align-items:center;
-justify-content:center;
-margin:auto;
-box-shadow:0 8px 25px rgba(0,0,0,0.35);
-cursor:pointer;
-transition:0.25s;
+width:90px;height:90px;border-radius:50%;
+border:none;background:#5865F2;
+display:flex;align-items:center;justify-content:center;
+margin:auto;cursor:pointer;transition:.25s;
 }
-
-.discord-btn img{
-width:45px;
-filter:invert(1);
-}
-
-.discord-btn:hover{
-transform:scale(1.08);
-background:#4752C4;
-}
+.discord-btn img{width:45px;filter:invert(1);}
+.discord-btn:hover{transform:scale(1.08);background:#4752C4;}
 </style>
 
 </head>
@@ -50,17 +33,21 @@ background:#4752C4;
 </button>
 
 <script src="auth.js"></script>
-<body>
 
 <script>
+
+/* MAINTENANCE */
 if(localStorage.getItem("siteLocked")==="true"){
 document.body.innerHTML="<h1>Website Under Maintenance</h1>";
 }
-<script>
-const user = JSON.parse(localStorage.getItem("discordUser") || "null");
-if(user){
-  window.location.href="dashboard.html";
-}
-</script>
-  </html>
 
+/* AUTO REDIRECT IF LOGGED */
+const user = JSON.parse(localStorage.getItem("discordUser")||"null");
+if(user){
+window.location.href="dashboard.html";
+}
+
+</script>
+
+</body>
+</html>
