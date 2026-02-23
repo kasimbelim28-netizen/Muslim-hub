@@ -11,9 +11,9 @@
 
 <script>
 function send(){
-let data=JSON.parse(localStorage.getItem("partners")||"[]");
-data.push(document.getElementById("name").value);
-localStorage.setItem("partners",JSON.stringify(data));
+let list=JSON.parse(localStorage.getItem("partners")||"[]");
+list.push(name.value);
+localStorage.setItem("partners",JSON.stringify(list));
 alert("Sent");
 }
 </script>
