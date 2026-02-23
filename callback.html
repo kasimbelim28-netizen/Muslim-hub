@@ -5,23 +5,23 @@
 <h2>Logging you in...</h2>
 
 <script>
-const params=new URLSearchParams(location.search);
-const code=params.get("code");
+const params = new URLSearchParams(window.location.search);
+const code = params.get("code");
 
 if(!code){
-document.body.innerHTML="Login failed (no code)";
+  document.body.innerHTML="<h2>Login failed</h2>";
 }else{
 
-/* FAKE USER FOR NOW (replace later with real Discord API) */
+  /* TEMP FAKE USER (until full OAuth API added) */
+  const fakeUser = {
+    id:"1473632317112189062",
+    username:"Kasim"
+  };
 
-const fakeUser={
-id:"1473632317112189062",
-username:"kasim.visual"
-};
+  localStorage.setItem("discordUser", JSON.stringify(fakeUser));
 
-localStorage.setItem("discordUser",JSON.stringify(fakeUser));
-
-window.location.href="dashboard.html";
+  /* redirect */
+  window.location.href="dashboard.html";
 }
 </script>
 
