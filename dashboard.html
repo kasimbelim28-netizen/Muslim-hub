@@ -53,7 +53,7 @@ body{background:#0a0f1c;color:white;font-family:sans-serif;margin:0}
 
 <script>
 
-/* ================= WEBHOOKS ================= */
+/* ========= WEBHOOKS ========= */
 
 const SUPPORT_WEBHOOK="https://discord.com/api/webhooks/1475502488781066320/PIDgCylGmkhnfIJlAFkm9CM13eSYuN03qPefXWjGWS6qMCnk1WI_ygekJY8FfqV4mYUC";
 const LOG_WEBHOOK="https://discord.com/api/webhooks/1475502367402233996/9tyecTFCmYzrh4MI9QFIFUzSmu_fpFio2lIPbWv-FfFR9HmtcCgRISI05omfkA1apAe-";
@@ -72,7 +72,7 @@ sendWebhook(LOG_WEBHOOK,`🟢 **Login:**\n${name} Logged to the website!`);
 }
 
 function logError(problem){
-sendWebhook(LOG_WEBHOOK,`🔴 **Error:**\nThe website have (${problem})\n<@1473632317112189062> fix it`);
+sendWebhook(LOG_WEBHOOK,`🔴 **Error:**\nThe website have (${problem})\n<@${OWNER_ID}> fix it`);
 }
 
 function sendSupportMsg(name,text){
@@ -82,7 +82,7 @@ User: ${name}
 Message: "${text}"`);
 }
 
-/* ================= DISCORD AUTO LOGIN ================= */
+/* ========= DISCORD LOGIN ========= */
 
 (function(){
 
@@ -114,7 +114,7 @@ loadUser();
 
 })();
 
-/* ================= LOAD USER ================= */
+/* ========= LOAD USER ========= */
 
 function loadUser(){
 
@@ -129,7 +129,6 @@ return;
 document.getElementById("accountInfo").innerText=
 "Logged in as "+user.username+"#"+user.discriminator;
 
-/* owner-only admin button */
 if(user.id===OWNER_ID){
 document.querySelector(".admin").style.display="inline-block";
 }else{
@@ -138,14 +137,13 @@ document.querySelector(".admin").style.display="none";
 
 }
 
-/* ================= MAINTENANCE ================= */
+/* ========= MAINTENANCE ========= */
 
 if(localStorage.getItem("siteLocked")==="true"){
-document.body.innerHTML=
-"<h1 style='margin-top:40%;text-align:center'>Website Under Maintenance</h1>";
+document.body.innerHTML="<h1 style='margin-top:40%;text-align:center'>Website Under Maintenance</h1>";
 }
 
-/* ================= SUPPORT ================= */
+/* ========= SUPPORT ========= */
 
 function openSupport(){
 document.getElementById("supportBox").style.display="block";
@@ -170,7 +168,7 @@ sendSupportMsg(name,t);
 
 }
 
-/* ================= ADMIN ================= */
+/* ========= ADMIN ========= */
 
 function adminToggle(){
 document.getElementById("adminArea").style.display="block";
@@ -212,4 +210,4 @@ else alert("Unknown command");
 </script>
 
 </body>
-</html>
+  </html>
