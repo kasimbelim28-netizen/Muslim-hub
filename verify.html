@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Verify Access</title>
 
-<!-- CORRECT SUPABASE CDN -->
+<!-- LOAD SUPABASE FIRST -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
 </head>
@@ -19,7 +19,7 @@ style="padding:10px;width:250px">
 
 <br><br>
 
-<button onclick="sendVerify()" style="padding:10px 20px">
+<button id="verifyBtn" style="padding:10px 20px">
 Verify
 </button>
 
@@ -27,7 +27,13 @@ Verify
 
 <script>
 
-/* ========= CONFIG ========= */
+/* ===== CHECK SUPABASE LOADED ===== */
+if(!window.supabase){
+document.getElementById("msg").innerText="Supabase failed to load";
+throw new Error("Supabase not loaded");
+}
+
+/* ===== CONFIG ===== */
 
 const SUPABASE_URL="https://xbwgottrnhubmpxhvkrk.supabase.co";
 const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhid2dvdHRybmh1Ym1weGh2a3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3MzI2NzMsImV4cCI6MjA4NzMwODY3M30.EBKwVxdzCtVv9P_S7-IFs1V-NeXRwhuFAL6FUNBEsvk";
@@ -35,17 +41,13 @@ const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const SUPPORT_WEBHOOK="https://discord.com/api/webhooks/1475502488781066320/PIDgCylGmkhnfIJlAFkm9CM13eSYuN03qPefXWjGWS6qMCnk1WI_ygekJY8FfqV4mYUC";
 const LOG_WEBHOOK="https://discord.com/api/webhooks/1475502367402233996/9tyecTFCmYzrh4MI9QFIFUzSmu_fpFio2lIPbWv-FfFR9HmtcCgRISI05omfkA1apAe-";
 
-/* ========= SUPABASE INIT ========= */
-
-if(!window.supabase){
-alert("Supabase failed to load");
-}
-
 const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 
-/* ========= VERIFY FUNCTION ========= */
+/* ===== VERIFY FUNCTION ===== */
 
 async function sendVerify(){
+
+document.getElementById("msg").innerText="Clicked...";
 
 const username=document.getElementById("username").value.trim();
 
@@ -62,9 +64,9 @@ location.href="index.html";
 return;
 }
 
-document.getElementById("msg").innerText="Verifying...";
+document.getElementById("msg").innerText="Saving...";
 
-/* SAVE USER */
+/* SAVE TO DB */
 
 const {error}=await supabase
 .from("users")
@@ -75,40 +77,35 @@ verified:true
 }]);
 
 if(error){
-console.error(error);
-document.getElementById("msg").innerText="Database error: "+error.message;
+document.getElementById("msg").innerText="DB ERROR: "+error.message;
 return;
 }
 
-/* SEND WEBHOOKS */
+/* WEBHOOKS */
 
 fetch(SUPPORT_WEBHOOK,{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-content:`🟢 VERIFY REQUEST\nUser: ${username}\nID: ${user.id}`
-})
+body:JSON.stringify({content:`VERIFY REQUEST\n${username} (${user.id})`})
 });
 
 fetch(LOG_WEBHOOK,{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-content:`📌 User verified on website: ${username}`
-})
+body:JSON.stringify({content:`User verified: ${username}`})
 });
-
-/* LOCAL VERIFIED */
 
 localStorage.setItem("verifiedUser","true");
 
-document.getElementById("msg").innerText="✅ Verified! Redirecting...";
+document.getElementById("msg").innerText="✅ Verified!";
 
-setTimeout(()=>{
-location.href="dashboard.html";
-},1200);
+setTimeout(()=>location.href="dashboard.html",1200);
 
 }
+
+/* ===== BUTTON EVENT (SAFE) ===== */
+
+document.getElementById("verifyBtn").addEventListener("click",sendVerify);
 
 </script>
 
