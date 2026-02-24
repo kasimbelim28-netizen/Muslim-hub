@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <title>Verify Access</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<!-- CORRECT SUPABASE CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
 </head>
 
@@ -34,11 +35,15 @@ const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const SUPPORT_WEBHOOK="https://discord.com/api/webhooks/1475502488781066320/PIDgCylGmkhnfIJlAFkm9CM13eSYuN03qPefXWjGWS6qMCnk1WI_ygekJY8FfqV4mYUC";
 const LOG_WEBHOOK="https://discord.com/api/webhooks/1475502367402233996/9tyecTFCmYzrh4MI9QFIFUzSmu_fpFio2lIPbWv-FfFR9HmtcCgRISI05omfkA1apAe-";
 
-/* ========= SUPABASE ========= */
+/* ========= SUPABASE INIT ========= */
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+if(!window.supabase){
+alert("Supabase failed to load");
+}
 
-/* ========= VERIFY ========= */
+const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+
+/* ========= VERIFY FUNCTION ========= */
 
 async function sendVerify(){
 
@@ -57,7 +62,9 @@ location.href="index.html";
 return;
 }
 
-/* SAVE VERIFIED IN DATABASE */
+document.getElementById("msg").innerText="Verifying...";
+
+/* SAVE USER */
 
 const {error}=await supabase
 .from("users")
@@ -69,11 +76,11 @@ verified:true
 
 if(error){
 console.error(error);
-document.getElementById("msg").innerText="Database error";
+document.getElementById("msg").innerText="Database error: "+error.message;
 return;
 }
 
-/* SEND DISCORD WEBHOOKS */
+/* SEND WEBHOOKS */
 
 fetch(SUPPORT_WEBHOOK,{
 method:"POST",
@@ -91,7 +98,7 @@ content:`📌 User verified on website: ${username}`
 })
 });
 
-/* MARK LOCAL VERIFIED */
+/* LOCAL VERIFIED */
 
 localStorage.setItem("verifiedUser","true");
 
