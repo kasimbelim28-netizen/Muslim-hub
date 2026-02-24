@@ -40,7 +40,7 @@ body{background:#0a0f1c;color:white;font-family:sans-serif;margin:0}
 <div id="supportBox" style="display:none;background:#020617;padding:20px;border-radius:10px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)">
 <h3>Support</h3>
 <textarea id="supportText" placeholder="Describe your issue"></textarea><br><br>
-<button onclick="generateSupport()">Create</button>
+<button onclick="generateSupport()">Send</button>
 <button onclick="closeSupport()">Close</button>
 <p id="supportOutput"></p>
 </div>
@@ -51,13 +51,24 @@ body{background:#0a0f1c;color:white;font-family:sans-serif;margin:0}
 <div id="output"></div>
 </div>
 
-<script>
+<script type="module">
+
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+/* ========= SUPABASE ========= */
+
+const SUPABASE_URL="https://xbwgottrnhubmpxhvkrk.supabase.co";
+const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhid2dvdHRybmh1Ym1weGh2a3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3MzI2NzMsImV4cCI6MjA4NzMwODY3M30.EBKwVxdzCtVv9P_S7-IFs1V-NeXRwhuFAL6FUNBEsvk";
+
+const supabase=createClient(SUPABASE_URL,SUPABASE_ANON);
 
 /* ========= WEBHOOKS ========= */
 
 const SUPPORT_WEBHOOK="https://discord.com/api/webhooks/1475502488781066320/PIDgCylGmkhnfIJlAFkm9CM13eSYuN03qPefXWjGWS6qMCnk1WI_ygekJY8FfqV4mYUC";
 const LOG_WEBHOOK="https://discord.com/api/webhooks/1475502367402233996/9tyecTFCmYzrh4MI9QFIFUzSmu_fpFio2lIPbWv-FfFR9HmtcCgRISI05omfkA1apAe-";
 const OWNER_ID="1473632317112189062";
+
+/* ========= WEBHOOK HELPERS ========= */
 
 function sendWebhook(url,msg){
 fetch(url,{
@@ -70,98 +81,78 @@ body:JSON.stringify({content:msg})
 function logLogin(name){
 if(sessionStorage.getItem("loginLogged")) return;
 sessionStorage.setItem("loginLogged","1");
-sendWebhook(LOG_WEBHOOK,`🟢 **Login:**\n${name} Logged to the website!`);
+sendWebhook(LOG_WEBHOOK,`🟢 Login:\n${name} Logged to the website!`);
 }
 
 function logError(problem){
-sendWebhook(LOG_WEBHOOK,`🔴 **Error:**\n${problem}\n<@${OWNER_ID}>`);
+sendWebhook(LOG_WEBHOOK,`🔴 Error:\n${problem}\n<@${OWNER_ID}>`);
 }
 
 function sendSupportMsg(name,text){
 sendWebhook(SUPPORT_WEBHOOK,
-`🟡 **Support Request**
-User: ${name}
-Message: "${text}"`);
+`🟡 Support Request\nUser: ${name}\nMessage: "${text}"`);
 }
 
-/* ========= GLOBAL ERROR LOGGER ========= */
-
-window.onerror=function(msg,src,line,col,error){
+window.onerror=function(msg,src,line){
 logError(msg+" at line "+line);
 };
 
-/* ========= DISCORD LOGIN ========= */
-
-(function(){
-
-if(window.location.hash.includes("access_token")){
-
-const hash=new URLSearchParams(window.location.hash.substring(1));
-const token=hash.get("access_token");
-
-fetch("https://discord.com/api/users/@me",{
-headers:{Authorization:"Bearer "+token}
-})
-.then(r=>r.json())
-.then(user=>{
-
-localStorage.setItem("discordUser",JSON.stringify(user));
-history.replaceState({},document.title,"dashboard.html");
-
-logLogin(user.username||"User");
-
-loadUser();
-
-})
-.catch(()=>logError("Discord login fetch failed"));
-
-return;
-}
-
-loadUser();
-
-})();
-
 /* ========= LOAD USER ========= */
 
-function loadUser(){
+(async function(){
 
 const user=JSON.parse(localStorage.getItem("discordUser")||"null");
 
 if(!user){
-logError("User session missing");
 location.href="index.html";
 return;
 }
 
+/* SAVE USER */
+await supabase.from("users").upsert([{
+id:user.id,
+name:user.username
+}]);
+
+
+/* CHECK VERIFIED */
+const {data}=await supabase
+.from("users")
+.select("verified")
+.eq("id",user.id)
+.single();
+
+if(!data || !data.verified){
+location.href="verify.html";
+return;
+}
+
+/* SHOW ACCOUNT */
 document.getElementById("accountInfo").innerText=
 "Logged in as "+user.username+"#"+user.discriminator;
 
+logLogin(user.username);
+
+/* ADMIN */
 if(user.id===OWNER_ID){
 document.querySelector(".admin").style.display="inline-block";
 }else{
 document.querySelector(".admin").style.display="none";
 }
 
-}
-
-/* ========= MAINTENANCE ========= */
-
-if(localStorage.getItem("siteLocked")==="true"){
-document.body.innerHTML="<h1 style='margin-top:40%;text-align:center'>Website Under Maintenance</h1>";
-}
+})();
 
 /* ========= SUPPORT ========= */
 
-function openSupport(){
+window.openSupport=function(){
 document.getElementById("supportBox").style.display="block";
 }
 
-function closeSupport(){
+window.closeSupport=function(){
 document.getElementById("supportBox").style.display="none";
 }
 
-function generateSupport(){
+window.generateSupport=function(){
 
 let t=document.getElementById("supportText").value.trim();
 if(!t)return alert("Write something");
@@ -169,20 +160,18 @@ if(!t)return alert("Write something");
 let user=JSON.parse(localStorage.getItem("discordUser")||"null");
 let name=user?.username||"Unknown";
 
-document.getElementById("supportOutput").innerText=
-'I have a report/support: "'+t+'"';
-
+document.getElementById("supportOutput").innerText="Sent!";
 sendSupportMsg(name,t);
 
 }
 
 /* ========= ADMIN ========= */
 
-function adminToggle(){
+window.adminToggle=function(){
 document.getElementById("adminArea").style.display="block";
 }
 
-function runCmd(){
+window.runCmd=function(){
 
 let cmd=document.getElementById("cmdBox").value.trim();
 let output=document.getElementById("output");
