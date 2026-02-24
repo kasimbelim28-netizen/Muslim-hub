@@ -4,36 +4,9 @@
 <meta charset="UTF-8">
 <title>Verify Access</title>
 
-<!-- LOAD SUPABASE FIRST -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script type="module">
 
-</head>
-
-<body style="font-family:sans-serif;text-align:center;margin-top:60px">
-
-<h2>Manual Verification</h2>
-<p>Enter your Discord username to request access</p>
-
-<input id="username" placeholder="example: kasim#0001"
-style="padding:10px;width:250px">
-
-<br><br>
-
-<button id="verifyBtn" style="padding:10px 20px">
-Verify
-</button>
-
-<p id="msg"></p>
-
-<script>
-
-/* ===== CHECK SUPABASE LOADED ===== */
-if(!window.supabase){
-document.getElementById("msg").innerText="Supabase failed to load";
-throw new Error("Supabase not loaded");
-}
-
-/* ===== CONFIG ===== */
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 const SUPABASE_URL="https://xbwgottrnhubmpxhvkrk.supabase.co";
 const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhid2dvdHRybmh1Ym1weGh2a3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3MzI2NzMsImV4cCI6MjA4NzMwODY3M30.EBKwVxdzCtVv9P_S7-IFs1V-NeXRwhuFAL6FUNBEsvk";
@@ -41,13 +14,9 @@ const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const SUPPORT_WEBHOOK="https://discord.com/api/webhooks/1475502488781066320/PIDgCylGmkhnfIJlAFkm9CM13eSYuN03qPefXWjGWS6qMCnk1WI_ygekJY8FfqV4mYUC";
 const LOG_WEBHOOK="https://discord.com/api/webhooks/1475502367402233996/9tyecTFCmYzrh4MI9QFIFUzSmu_fpFio2lIPbWv-FfFR9HmtcCgRISI05omfkA1apAe-";
 
-const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+const supabase = createClient(SUPABASE_URL,SUPABASE_ANON);
 
-/* ===== VERIFY FUNCTION ===== */
-
-async function sendVerify(){
-
-document.getElementById("msg").innerText="Clicked...";
+window.sendVerify = async function(){
 
 const username=document.getElementById("username").value.trim();
 
@@ -64,11 +33,9 @@ location.href="index.html";
 return;
 }
 
-document.getElementById("msg").innerText="Saving...";
+/* SAVE USER */
 
-/* SAVE TO DB */
-
-const {error}=await supabase
+const { error } = await supabase
 .from("users")
 .upsert([{
 id:user.id,
@@ -77,7 +44,8 @@ verified:true
 }]);
 
 if(error){
-document.getElementById("msg").innerText="DB ERROR: "+error.message;
+console.error(error);
+document.getElementById("msg").innerText="Database error";
 return;
 }
 
@@ -86,28 +54,48 @@ return;
 fetch(SUPPORT_WEBHOOK,{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({content:`VERIFY REQUEST\n${username} (${user.id})`})
+body:JSON.stringify({
+content:`🟢 VERIFY REQUEST\nUser: ${username}\nID: ${user.id}`
+})
 });
 
 fetch(LOG_WEBHOOK,{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({content:`User verified: ${username}`})
+body:JSON.stringify({
+content:`📌 User verified on website: ${username}`
+})
 });
 
 localStorage.setItem("verifiedUser","true");
 
-document.getElementById("msg").innerText="✅ Verified!";
+document.getElementById("msg").innerText="✅ Verified! Redirecting...";
 
-setTimeout(()=>location.href="dashboard.html",1200);
+setTimeout(()=>{
+location.href="dashboard.html";
+},1200);
 
 }
 
-/* ===== BUTTON EVENT (SAFE) ===== */
-
-document.getElementById("verifyBtn").addEventListener("click",sendVerify);
-
 </script>
+
+</head>
+
+<body style="font-family:sans-serif;text-align:center;margin-top:60px">
+
+<h2>Verification</h2>
+<p>Enter your Discord username to request access</p>
+
+<input id="username" placeholder="example: user#0001"
+style="padding:10px;width:250px">
+
+<br><br>
+
+<button onclick="sendVerify()" style="padding:10px 20px">
+Verify
+</button>
+
+<p id="msg"></p>
 
 </body>
 </html>
