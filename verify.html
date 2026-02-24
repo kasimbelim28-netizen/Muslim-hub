@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Verify Access</title>
+</head>
+
+<body style="font-family:sans-serif;text-align:center;margin-top:60px">
+
+<h2>Manual Verification</h2>
+<p>Enter your Discord username to request access</p>
+
+<input id="username" placeholder="example: kasim#0001"
+style="padding:10px;width:250px">
+
+<br><br>
+
+<button onclick="sendVerify()" style="padding:10px 20px">
+Verify
+</button>
+
+<p id="msg"></p>
+
+<script>
+
+const SUPPORT_WEBHOOK="https://discord.com/api/webhooks/1475502488781066320/PIDgCylGmkhnfIJlAFkm9CM13eSYuN03qPefXWjGWS6qMCnk1WI_ygekJY8FfqV4mYUC";
+const LOG_WEBHOOK="https://discord.com/api/webhooks/1475502367402233996/9tyecTFCmYzrh4MI9QFIFUzSmu_fpFio2lIPbWv-FfFR9HmtcCgRISI05omfkA1apAe-";
+
+async function sendVerify(){
+
+const username=document.getElementById("username").value;
+
+if(!username){
+document.getElementById("msg").innerText="Enter username first";
+return;
+}
+
+// send to SUPPORT channel
+await fetch(SUPPORT_WEBHOOK,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+content:`🟢 VERIFY REQUEST\nUser: ${username}`
+})
+});
+
+// send to LOG channel
+await fetch(LOG_WEBHOOK,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+content:`📌 Verification submitted: ${username}`
+})
+});
+
+document.getElementById("msg").innerText="✅ Verification sent! Wait for admin approval.";
+
+}
+
+</script>
+
+</body>
+  </html>
